@@ -1,0 +1,3 @@
+spring:
+  application:
+    name: desafio-sistema-de-reserva-de-restaurante
