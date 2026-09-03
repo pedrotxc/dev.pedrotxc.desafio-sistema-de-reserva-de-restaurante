@@ -2,21 +2,15 @@ package dev.pedrotxc.desafio_sistema_de_reserva_de_restaurante.controller;
 
 import dev.pedrotxc.desafio_sistema_de_reserva_de_restaurante.dto.UserRequestDTO;
 import dev.pedrotxc.desafio_sistema_de_reserva_de_restaurante.dto.UserResponseDTO;
-import dev.pedrotxc.desafio_sistema_de_reserva_de_restaurante.exception.ErrorResponse;
-import dev.pedrotxc.desafio_sistema_de_reserva_de_restaurante.exception.UserNotFoundException;
+import dev.pedrotxc.desafio_sistema_de_reserva_de_restaurante.dto.UserUpdateDTO;
 import dev.pedrotxc.desafio_sistema_de_reserva_de_restaurante.service.UserService;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cglib.core.Local;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -30,23 +24,35 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/saveUser")
-    public ResponseEntity<UserResponseDTO> saveUser(@Valid @RequestBody UserRequestDTO userRequestDTO) {
-        UserResponseDTO savedUser = userService.saveUser(userRequestDTO);
+    @PostMapping
+    public ResponseEntity<UserResponseDTO> save(@Valid @RequestBody UserRequestDTO userRequestDTO) {
+        UserResponseDTO savedUser = userService.save(userRequestDTO);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUser.id()).toUri();
         return ResponseEntity.created(uri).body(savedUser);
     }
 
-    @GetMapping("/findAll")
+    @GetMapping
     public ResponseEntity<List<UserResponseDTO>> findAll() {
         List<UserResponseDTO> users = userService.findAll();
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id) {
+    public ResponseEntity<UserResponseDTO> findById(@PathVariable Long id) {
         UserResponseDTO user = userService.findById(id);
         return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserResponseDTO> update(@Valid @RequestBody UserUpdateDTO userUpdateDTO, @PathVariable long id) {
+        UserResponseDTO userUpdated = userService.update(userUpdateDTO, id);
+        return ResponseEntity.ok(userUpdated);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable long id) {
+        userService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
